@@ -46,19 +46,17 @@ auto speck::calc_approx_detail_len(size_t orig_len, size_t lev) -> std::array<si
 auto speck::make_coeff_positive(vecd_type& buf, std::vector<bool>& signs) -> double
 {
   signs.resize(buf.size(), false);
-  auto max = std::abs(buf[0]);
 
-  const auto tmpb = std::array<bool, 2>{true, false};
+  // Step 1: fill sign array
+  std::generate(signs.begin(), signs.end(), [it = buf.cbegin()]() mutable { return *it++ >= 0.0; });
 
-  for (size_t i = 0; i < buf.size(); i++) {
-    auto tmpd = std::array<double, 2>{buf[i], -buf[i]};
-    size_t idx = buf[i] < 0.0;
-    buf[i] = tmpd[idx];
-    signs[i] = tmpb[idx];
-    max = std::max(max, buf[i]);
-  }
+  // Step 2: make every value positive
+  std::for_each(buf.begin(), buf.end(), [](auto& v) { v = std::abs(v); });
 
-  return max;
+  // Step 3: find the maximum of all values
+  auto maxit = std::max_element(buf.begin(), buf.end());
+
+  return *maxit;
 }
 
 // Good solution to deal with bools and unsigned chars
@@ -78,12 +76,17 @@ auto speck::pack_booleans(std::vector<uint8_t>& dest, const std::vector<bool>& s
   auto a = std::array<uint8_t, 8>{};
   uint64_t t = 0;
   size_t dest_idx = offset;
+  auto src_itr1 = src.cbegin();
+  auto src_itr2 = src.cbegin() + 8;
   for (size_t i = 0; i < src.size(); i += 8) {
-#pragma GCC unroll 8
-    for (size_t j = 0; j < 8; j++)
-      a[j] = src[i + j];
+    //#pragma GCC unroll 8
+    // for (size_t j = 0; j < 8; j++)
+    //  a[j] = src[i + j];
+    std::copy(src_itr1, src_itr2, a.begin());
     std::memcpy(&t, a.data(), 8);
     dest[dest_idx++] = (magic * t) >> 56;
+    src_itr1 += 8;
+    src_itr2 += 8;
   }
 
   return RTNType::Good;
@@ -110,17 +113,21 @@ auto speck::unpack_booleans(std::vector<bool>& dest,
   const uint64_t mask = 0x8080808080808080;
 
 #ifndef OMP_UNPACK_BOOLEANS
+  // Serial implementation
   auto a = std::array<uint8_t, 8>();
   uint64_t t = 0;
-  size_t dest_idx = 0;
+  // size_t dest_idx = 0;
+  auto dest_itr = dest.begin();
   for (size_t byte_idx = 0; byte_idx < num_of_bytes; byte_idx++) {
     const uint8_t* ptr = src_ptr + byte_idx;
     t = ((magic * (*ptr)) & mask) >> 7;
     std::memcpy(a.data(), &t, 8);
-#pragma GCC unroll 8
-    for (size_t i = 0; i < 8; i++)
-      dest[dest_idx + i] = a[i];
-    dest_idx += 8;
+    //#pragma GCC unroll 8
+    // for (size_t i = 0; i < 8; i++)
+    //  dest[dest_idx + i] = a[i];
+    // dest_idx += 8;
+    std::copy(a.cbegin(), a.cend(), dest_itr);
+    dest_itr += 8;
   }
 #else
   // Because in most implementations std::vector<bool> is stored as uint64_t
@@ -399,7 +406,7 @@ auto speck::chunk_volume(const std::array<size_t, 3>& vol_dim,
         chunk_idx++;
       }
 
-  return std::move(chunks);
+  return chunks;
 }
 
 template <typename T>
