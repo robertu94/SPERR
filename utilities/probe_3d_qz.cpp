@@ -63,12 +63,11 @@ auto test_configuration_omp(const T* in_buf,
     printf("    There are no outliers at this quantization level!\n");
   }
   else {
-    printf(
-        "    Outliers: num = %ld, pct = %.2f%%, bpp ~ %.2f, "
-        "using total storage ~ %.2f%%\n",
-        outlier.first, float(outlier.first * 100) / float(total_vals),
-        float(outlier.second * 8) / float(outlier.first),
-        float(outlier.second * 100) / float(encoded_stream.size()));
+    printf( "    Outliers: num = %ld, pct = %.2f%%, bpp ~ %.2f, "
+            "using total storage ~ %.2f%%\n",
+            outlier.first, float(outlier.first * 100) / float(total_vals),
+            float(outlier.second * 8) / float(outlier.first),
+            float(outlier.second * 100) / float(encoded_stream.size()));
   }
 
   // Perform decompression
@@ -95,6 +94,16 @@ auto test_configuration_omp(const T* in_buf,
   speck::calc_stats(in_buf, output_buf.data(), total_vals, rmse, lmax, psnr, arr1min, arr1max);
   printf("    Original data range = (%.2e, %.2e)\n", arr1min, arr1max);
   printf("    Reconstructed data RMSE = %.2e, L-Infty = %.2e, PSNR = %.2fdB\n", rmse, lmax, psnr);
+
+  // Find and print p% largest error magnitude
+  auto error = std::vector<T>( total_vals );
+  std::generate( error.begin(), error.end(), 
+                 [i1 = in_buf, i2 = output_buf.begin()]() mutable
+                 {return std::abs(*i1++ - *i2++);} );
+  double pct = 0.1;
+  size_t nth = size_t(pct * 100.0 * double(total_vals) + 1.0);
+  std::nth_element( error.begin(), error.begin() + nth, error.end(), std::greater{} );
+  printf("%luth element = %f\n", nth, error[nth]);
 
   return 0;
 }
