@@ -100,10 +100,10 @@ auto test_configuration_omp(const T* in_buf,
   std::generate( error.begin(), error.end(), 
                  [i1 = in_buf, i2 = output_buf.begin()]() mutable
                  {return std::abs(*i1++ - *i2++);} );
-  double pct = 0.1;
-  size_t nth = size_t(pct * 100.0 * double(total_vals) + 1.0);
+  double pct = 10.0;
+  size_t nth = size_t(pct / 100.0 * double(total_vals) + 1.0);
   std::nth_element( error.begin(), error.begin() + nth, error.end(), std::greater{} );
-  printf("%luth element = %f\n", nth, error[nth]);
+  printf("\nWith %.1f%% outliers, %lu-th element = %.8e\n", pct, nth, error[nth]);
 
   return 0;
 }
