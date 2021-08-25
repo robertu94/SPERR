@@ -103,6 +103,7 @@ auto SPECK3D_OMP_C::compress() -> RTNType
   // Let's prepare some data structures for compression!
   auto compressors = std::vector<SPECK3D_Compressor>(m_num_threads);
   auto chunk_rtn = std::vector<RTNType>(num_chunks, RTNType::Good);
+  auto comp_time = std::vector<double>(num_chunks, 0.0);
   m_encoded_streams.resize(num_chunks);
   std::for_each(m_encoded_streams.begin(), m_encoded_streams.end(), [](auto& v) { v.clear(); });
 
@@ -129,7 +130,8 @@ auto SPECK3D_OMP_C::compress() -> RTNType
 #endif
 
     // Action items
-    chunk_rtn[i] = compressor.compress();
+    //chunk_rtn[i] = compressor.compress();
+    comp_time[i] = compressor.compress();
     m_encoded_streams[i] = compressor.release_encoded_bitstream();
 
 #ifdef QZ_TERM
@@ -137,10 +139,13 @@ auto SPECK3D_OMP_C::compress() -> RTNType
 #endif
   }
 
-  auto fail =
-      std::find_if(chunk_rtn.begin(), chunk_rtn.end(), [](auto r) { return r != RTNType::Good; });
-  if (fail != chunk_rtn.end())
-    return (*fail);
+  //auto fail =
+  //    std::find_if(chunk_rtn.begin(), chunk_rtn.end(), [](auto r) { return r != RTNType::Good; });
+  //if (fail != chunk_rtn.end())
+  //  return (*fail);
+
+  auto total_time = std::accumulate(comp_time.begin(), comp_time.end(), 0.0);
+  printf("SPERR encoding time: %f\n", total_time);
 
   if (std::any_of(m_encoded_streams.begin(), m_encoded_streams.end(),
                   [](auto& s) { return s.empty(); }))
