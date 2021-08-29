@@ -145,7 +145,7 @@ auto SPECK3D_OMP_C::compress() -> RTNType
   //  return (*fail);
 
   auto total_time = std::accumulate(comp_time.begin(), comp_time.end(), 0.0);
-  printf("SPERR encoding time: %f\n", total_time);
+  printf(" -> SPERR encoding time (single-core ms): %f\n", total_time);
 
   if (std::any_of(m_encoded_streams.begin(), m_encoded_streams.end(),
                   [](auto& s) { return s.empty(); }))

@@ -149,7 +149,6 @@ int main(int argc, char* argv[])
   sam_read_n_bytes(file2, n_bytes, buf2.get());
 
   FLOAT rmse, lmax, psnr, arr1min, arr1max;
-  // sam_get_statsf(buf1, buf2, n_vals, &rmse, &lmax, &psnr, &arr1min, &arr1max);
   calc_stats(buf1.get(), buf2.get(), n_vals, rmse, lmax, psnr, arr1min, arr1max);
   printf("rmse = %e, lmax = %e, psnr = %f dB, orig_min = %f, orig_max = %f\n", rmse, lmax, psnr,
          arr1min, arr1max);
