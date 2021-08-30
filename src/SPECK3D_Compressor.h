@@ -39,7 +39,8 @@ class SPECK3D_Compressor {
 #endif
 
   //auto compress() -> RTNType;
-  auto compress() -> double;
+  //auto compress() -> double;
+  auto compress() -> std::vector<double>;
 
   auto view_encoded_bitstream() const -> const std::vector<uint8_t>&;
   auto release_encoded_bitstream() -> std::vector<uint8_t>&&;

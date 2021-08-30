@@ -104,6 +104,7 @@ auto SPECK3D_OMP_C::compress() -> RTNType
   auto compressors = std::vector<SPECK3D_Compressor>(m_num_threads);
   auto chunk_rtn = std::vector<RTNType>(num_chunks, RTNType::Good);
   auto comp_time = std::vector<double>(num_chunks, 0.0);
+  auto outliers = std::vector<std::vector<double>>( num_chunks );
   m_encoded_streams.resize(num_chunks);
   std::for_each(m_encoded_streams.begin(), m_encoded_streams.end(), [](auto& v) { v.clear(); });
 
@@ -131,7 +132,8 @@ auto SPECK3D_OMP_C::compress() -> RTNType
 
     // Action items
     //chunk_rtn[i] = compressor.compress();
-    comp_time[i] = compressor.compress();
+    //comp_time[i] = compressor.compress();
+    outliers[i] = compressor.compress();
     m_encoded_streams[i] = compressor.release_encoded_bitstream();
 
 #ifdef QZ_TERM
@@ -144,8 +146,20 @@ auto SPECK3D_OMP_C::compress() -> RTNType
   //if (fail != chunk_rtn.end())
   //  return (*fail);
 
-  auto total_time = std::accumulate(comp_time.begin(), comp_time.end(), 0.0);
-  printf(" -> SPERR encoding time (single-core ms): %f\n", total_time);
+  //auto total_time = std::accumulate(comp_time.begin(), comp_time.end(), 0.0);
+  //printf(" -> SPERR encoding time (single-core ms): %f\n", total_time);
+
+  auto total_outliers = std::vector<double>();
+  auto total_n_outliers = std::accumulate( outliers.begin(), outliers.end(), 0,
+                          [](size_t total, std::vector<double>& v){return total + v.size();} );
+  printf(" -> Encoding: total num of outliers = %lu\n", total_n_outliers);
+  total_outliers.reserve( total_n_outliers );
+  for( auto& v : outliers )
+    total_outliers.insert(total_outliers.end(), v.begin(), v.end()); 
+  printf(" -> Encoding: total num of outliers = %lu\n", total_outliers.size());
+  auto* f = std::fopen( "encoding.outlier", "wb" );
+  std::fwrite(total_outliers.data(), 8, total_n_outliers, f);
+  std::fclose(f);
 
   if (std::any_of(m_encoded_streams.begin(), m_encoded_streams.end(),
                   [](auto& s) { return s.empty(); }))

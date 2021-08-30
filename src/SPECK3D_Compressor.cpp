@@ -44,11 +44,14 @@ auto SPECK3D_Compressor::release_encoded_bitstream() -> std::vector<uint8_t>&&
 }
 
 #ifdef QZ_TERM
-auto SPECK3D_Compressor::compress() -> double
+//auto SPECK3D_Compressor::compress() -> double
+auto SPECK3D_Compressor::compress() -> std::vector<double>
 {
+  auto ret_buf = std::vector<double>();
   if (m_val_buf.empty())
-    return 0.0;
     //return RTNType::Error;
+    //return 0.0;
+    return ret_buf;
   m_condi_stream.fill(0);
   m_speck_stream.clear();
   m_sperr_stream.clear();
@@ -62,7 +65,8 @@ auto SPECK3D_Compressor::compress() -> double
     m_condi_stream = constant.second;
     auto tmp = m_assemble_encoded_bitstream();
     //return tmp;
-    return 0.0;
+    //return 0.0;
+    return ret_buf;
   }
 
   // Note that we keep the original buffer untouched for outlier calculations
@@ -74,14 +78,16 @@ auto SPECK3D_Compressor::compress() -> double
   m_conditioner.toggle_all_settings(m_conditioning_settings);
   auto [rtn, condi_meta] = m_conditioner.condition(m_val_buf2);
   if (rtn != RTNType::Good)
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return rtn;
   m_condi_stream = condi_meta;
 
   // Step 2: wavelet transform
   rtn = m_cdf.take_data(std::move(m_val_buf2), m_dims);
   if (rtn != RTNType::Good)
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return rtn;
   // Figure out which dwt3d strategy to use.
   // Note: this strategy needs to be consistent with SPECK3D_Decompressor.
@@ -95,23 +101,27 @@ auto SPECK3D_Compressor::compress() -> double
   // Step 3: SPECK encoding
   rtn = m_encoder.take_data(m_cdf.release_data(), m_dims);
   if (rtn != RTNType::Good)
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return rtn;
   m_encoder.set_quantization_term_level(m_qz_lev);
   rtn = m_encoder.encode();
   if (rtn != RTNType::Good)
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return rtn;
   m_speck_stream = m_encoder.view_encoded_bitstream();
   if (m_speck_stream.empty())
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return RTNType::Error;
 
   // Step 4: perform a decompression pass (reusing the same object states and
   // memory blocks).
   rtn = m_encoder.decode();
   if (rtn != RTNType::Good)
-    return 0.0;
+    return ret_buf;
+    //return 0.0;
     //return rtn;
   m_cdf.take_data(m_encoder.release_data(), m_dims);
   if (xforms_xy == xforms_z)
@@ -138,8 +148,12 @@ auto SPECK3D_Compressor::compress() -> double
       new_tol = std::min(new_tol, std::abs(m_diffv[i]));
   }
   for (size_t i = 0; i < total_vals; i++) {
-    if (std::abs(m_diffv[i]) >= new_tol)
+    if (std::abs(m_diffv[i]) >= new_tol) {
       m_LOS.emplace_back(i, m_diffv[i]);
+
+      // Fill values in `ret_buf` too
+      ret_buf.push_back(m_diffv[i]);
+    }
   }
   m_sperr.set_tolerance(new_tol);  // Don't forget to pass in the new tolerance value!
 
@@ -154,18 +168,32 @@ auto SPECK3D_Compressor::compress() -> double
     auto end_time = std::chrono::steady_clock::now();
     diff_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
     if (rtn != RTNType::Good)
-      return 0.0;
+      return ret_buf;
+      //return 0.0;
       //return rtn;
     m_sperr_stream = m_sperr.get_encoded_bitstream();
     if (m_sperr_stream.empty())
-      return 0.0;
+      return ret_buf;
+      //return 0.0;
       //return RTNType::Error;
   }
 
   rtn = m_assemble_encoded_bitstream();
 
-  return diff_time;
+  // An extra step for paper experiments: decode the outliers and see what we get:
+  if( !m_sperr_stream.empty() ) {
+    m_sperr.decode();
+    const auto& rec_los = m_sperr.view_outliers();
+    for( auto& otl : rec_los ) {
+      auto idx = otl.location;
+      auto err = otl.error;
+      ret_buf.push_back( m_val_buf[idx] - m_val_buf2[idx] - err );
+    }
+  }
+
   //return rtn;
+  //return diff_time;
+  return ret_buf;
 }
 //
 // Finish QZ_TERM mode
