@@ -154,9 +154,16 @@ auto SPECK3D_OMP_C::compress() -> RTNType
                           [](size_t total, std::vector<double>& v){return total + v.size();} );
   printf(" -> Encoding: total num of outliers = %lu\n", total_n_outliers);
   total_outliers.reserve( total_n_outliers );
+
+  // Organize `total_outliers` in a way that the first half contains all outliers 
+  // before correction, and the second half contains all after correction.
   for( auto& v : outliers )
-    total_outliers.insert(total_outliers.end(), v.begin(), v.end()); 
+    total_outliers.insert(total_outliers.end(), v.begin(), v.begin() + v.size() / 2);
+  for( auto& v : outliers )
+    total_outliers.insert(total_outliers.end(), v.begin() + v.size() / 2, v.end());
+
   printf(" -> Encoding: total num of outliers = %lu\n", total_outliers.size());
+
   auto* f = std::fopen( "encoding.outlier", "wb" );
   std::fwrite(total_outliers.data(), 8, total_n_outliers, f);
   std::fclose(f);
