@@ -1,4 +1,4 @@
-## Welcome to GitHub Pages
+## SPERR: Lossy Scientific Data Compression
 
 You can use the [editor on GitHub](https://github.com/shaomeng/SPERR/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
 
