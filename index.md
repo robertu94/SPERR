@@ -1,6 +1,6 @@
 ## SPERR: Lossy Scientific Data Compression
 
-SPERR performs lossy compression on 2D or 3D scientific (floating point) data.
+SPERR performs lossy compression on 2D or 3D scientific (floating-point) data.
 Its output can be either _size-bounded_ (expressed as bit-per-pixel, or BPP) or
 _point-wise-error-bounded (PWE-bounded)_.
 
@@ -8,14 +8,14 @@ Under the hood, SPERR uses wavelet transforms, [SPECK](https://ieeexplore.ieee.o
 and a custom outlier coding algorithm to achieve efficient compression.
 The name of SPERR stands for **SP**eck with **ERR**or bounding.
 
-### Table of Contents
+## Table of Contents
 
 1. [High-level overview](#high-level)
 2. Build from source
 3. Command line utilities
 4. Programming API
 
-### High-level Overview <a name="high-level"></a>
+## High-level Overview <a name="high-level"></a>
 
 SPERR is designed to perform lossy compression on 2D and 3D floating-point
 data, which is often produced by numerical simulations.
@@ -28,8 +28,8 @@ the more compression SPERR can achieve.
 
 In its _size-bounded_ compression mode, SPERR takes in a `BPP` value that
 controls the level of compression. A valid BPP value is in the range of
-(0.0, 32.0) for single-precision floating point values, and (0.0, 64.0) for
-double-precision floating point values.
+(0.0, 32.0) for single-precision floating-point values, and (0.0, 64.0) for
+double-precision floating-point values.
 Often, a BPP value of 4.0 to 8.0 yields accurate enough reconstructions for
 the subsequent analysis.
 
@@ -41,7 +41,7 @@ than the input data range.
 Given a particular data set and a `Tol`, a proper `q` is required for SPERR
 to achieve the most compression.
 The mechanisms of `q` and how to choose a proper value for it is discussed
-in [this page](https://github.com/shaomeng/SPERR/wiki/SPERR-parameter:-quantization-level-q).
+on [this page](https://github.com/shaomeng/SPERR/wiki/SPERR-parameter:-quantization-level-q).
 
 
 
