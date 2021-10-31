@@ -10,12 +10,12 @@ The name of SPERR stands for **SP**eck with **ERR**or bounding.
 
 ## Table of Contents
 
-1. [High-level overview](#high-level-overview)
-2. [Build from source](#build-from-source)
-3. Command line utilities
+1. [High-Level Overview](#high-level-overview)
+2. [Build From Source](#build-from-source)
+3. [Command Line Utilities](#command-line-utilities)
 4. Programming API
 
-## High-level Overview <a name="high-level-overview"></a>
+## High-Level Overview <a name="high-level-overview"></a>
 
 SPERR is designed to perform lossy compression on 2D and 3D floating-point
 data, which is often produced by numerical simulations.
@@ -57,35 +57,31 @@ project.
 Note that one can simply configure and compile the code; if any of the
 requirements isn't met, either the configuration of compilation step will fail.
 More details about building SPERR from source, including build options,
-are documented [on this page](https://github.com/shaomeng/SPERR/wiki/Build-SPERR-From-Source).
+are documented on [this page](https://github.com/shaomeng/SPERR/wiki/Build-SPERR-From-Source).
 
 
+## Command Line Utilities <a name="command-line-utilities"></a>
 
+Upon a successful build, the following command line utilities are generated.
+Each utility program contains a set of parameters, and the best way to reference
+each parameter is to look at the help page of each utility program, e.g.,
+`compressor_3d -h` or `compressor_3d --help`.
+Here is a list of all command line utilities that are built by default.
 
-```markdown
-Syntax highlighted code block
+- `compressor_3d`: it takes in a 3D volume and produces compressed bitstream.
+  A set of options that describes the input volume and compression parameters
+  is required.
+- `decompressor_3d`: it takes in a SPERR compressed bitstream and produces a
+  reconstruction 3D volume.
+  Note that a `decompressor_3d` compiled in size-bounded mode can only decompress
+  a bitstream produced by size-bounded `compressor_3d`.
+  The same is also true for PWE-bounded `compressor_3d` and `decompressor_3d`.
+- `probe_3d`: it provides interactive actions for users to explore the tradeoff
+  between compression levels and qualities, and locate the best compression parameters.
+  Compression levels are expressed as average bit-per-pixel (BPP), and
+  compression qualities are expressed using peak signal-to-noise ratio (PSNR),
+  maximum point-wise error (PWE), root-mean-square error (RMSE).
+- `compressor_2d`, `decompressor_2d`, and `probe_2d` are currently under development.
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/shaomeng/SPERR/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+An example demonstrating the usage of `probe_3d` is provided on
+[this page](https://github.com/shaomeng/SPERR/wiki/Exploring-compression-parameters-using-probe_3d).
