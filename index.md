@@ -10,12 +10,12 @@ The name of SPERR stands for **SP**eck with **ERR**or bounding.
 
 ## Table of Contents
 
-1. [High-level overview](#high-level)
-2. Build from source
+1. [High-level overview](#high-level-overview)
+2. [Build from source](#build-from-source)
 3. Command line utilities
 4. Programming API
 
-## High-level Overview <a name="high-level"></a>
+## High-level Overview <a name="high-level-overview"></a>
 
 SPERR is designed to perform lossy compression on 2D and 3D floating-point
 data, which is often produced by numerical simulations.
@@ -43,6 +43,21 @@ to achieve the most compression.
 The mechanisms of `q` and how to choose a proper value for it is discussed
 on [this page](https://github.com/shaomeng/SPERR/wiki/SPERR-parameter:-quantization-level-q).
 
+
+## Build From Source <a name="build-from-source"></a>
+
+SPERR is written in C++, and uses CMake configuration system.
+To successfully compile SPERR from source, the build system needs to have
+1. a C++ compiler that supports C++ 17 standard;
+2. a C++ compiler that supports OpenMP; and
+3. CMake.
+
+The configuration and compilation steps are the same with any CMake-based
+project.
+Note that one can simply configure and compile the code; if any of the
+requirements isn't met, either the configuration of compilation step will fail.
+More details about building SPERR from source, including build options,
+are documented [on this page](https://github.com/shaomeng/SPERR/wiki/Build-SPERR-From-Source).
 
 
 
