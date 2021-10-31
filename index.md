@@ -62,7 +62,7 @@ are documented on [this page](https://github.com/shaomeng/SPERR/wiki/Build-SPERR
 
 ## Command Line Utilities <a name="command-line-utilities"></a>
 
-Upon a successful build, the following command line utilities are generated.
+Upon a successful build, the following command line utilities are generated in the `bin` directory.
 Each utility program contains a set of parameters, and the best way to reference
 each parameter is to look at the help page of each utility program, e.g.,
 `compressor_3d -h` or `compressor_3d --help`.
