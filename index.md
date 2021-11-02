@@ -5,7 +5,7 @@ Its output can be either _size-bounded_ (expressed as bit-per-pixel, or BPP) or
 _point-wise-error-bounded (PWE-bounded)_.
 
 Under the hood, SPERR uses wavelet transforms, [SPECK](https://ieeexplore.ieee.org/document/1347192) coding,
-and a custom outlier coding algorithm to achieve efficient compression.
+and a custom outlier coding algorithm in its compression pipeline.
 The name of SPERR stands for **SP**eck with **ERR**or bounding.
 
 ## Table of Contents
