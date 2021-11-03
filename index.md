@@ -84,4 +84,4 @@ Here is a list of all command line utilities that are built by default.
 - `compressor_2d`, `decompressor_2d`, and `probe_2d` are currently under development.
 
 An example demonstrating the usage of `probe_3d` is provided on
-[this page](https://github.com/shaomeng/SPERR/wiki/Exploring-compression-parameters-using-probe_3d).
+[this page](https://github.com/shaomeng/SPERR/wiki/CLI:-Exploring-Compression-Parameters-Using-probe_3d).
