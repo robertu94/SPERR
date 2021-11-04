@@ -41,7 +41,7 @@ than the input data range.
 Given a particular data set and a `Tol`, a proper `q` is required for SPERR
 to achieve the most compression.
 The mechanisms of `q` and how to choose a proper value for it is discussed
-on [this page](https://github.com/shaomeng/SPERR/wiki/CLI:-Parameter:-Quantization-Level-q).
+on [this page](https://github.com/shaomeng/SPERR/wiki/CLI:-Understanding-Quantization-Level-q).
 
 
 ## Build From Source <a name="build-from-source"></a>
