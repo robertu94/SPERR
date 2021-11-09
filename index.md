@@ -82,8 +82,8 @@ Here is a list of all command line utilities that are built by default.
   between compression levels and qualities, and locate the best compression parameters.
   Compression levels are expressed as average bit-per-pixel (BPP), and
   compression qualities are expressed using peak signal-to-noise ratio (PSNR),
-  maximum point-wise error (PWE), root-mean-square error (RMSE).
+  maximum point-wise error (PWE), root-mean-square error (RMSE). 
+  **[This page](https://github.com/shaomeng/SPERR/wiki/CLI:-Exploring-Compression-Parameters-Using-probe_3d)
+  provides an example demonstrating the usage of `probe_3d`.**
 - `compressor_2d`, `decompressor_2d`, and `probe_2d` are currently under development.
 
-An example demonstrating the usage of `probe_3d` is provided on
-[this page](https://github.com/shaomeng/SPERR/wiki/CLI:-Exploring-Compression-Parameters-Using-probe_3d).
