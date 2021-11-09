@@ -68,6 +68,8 @@ each parameter is to look at the help page of each utility program, e.g.,
 `compressor_3d -h` or `compressor_3d --help`.
 Here is a list of all command line utilities that are built by default.
 
+- `show_version`: it simply prints the current SPERR version and the Git SHA1
+  value of the code that is being compiled.
 - `compressor_3d`: it takes in a 3D volume and produces compressed bitstream.
   A set of options that describes the input volume and compression parameters
   is required.
