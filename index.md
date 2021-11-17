@@ -53,7 +53,7 @@ To successfully compile SPERR from source, the build system needs to have
 4. CMake.
 
 Some notable environments that do not meet this requirement are 
-a) Apple Clang which doesn't support OpenMP,
+a) Apple Clang which doesn't support OpenMP, and
 b) Intel/Nvidia compilers that reply on system `libstdc++` but 
 the system `libstdc++` is too old.
 
