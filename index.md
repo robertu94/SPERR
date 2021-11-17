@@ -48,12 +48,16 @@ on [this page](https://github.com/shaomeng/SPERR/wiki/CLI:-Understanding-Quantiz
 
 SPERR is written in C++, and uses CMake configuration system.
 To successfully compile SPERR from source, the build system needs to have
-1. a C++ compiler that supports C++ 17 standard;
-2. a C++ compiler that supports OpenMP; and
-3. CMake.
+1. a C++ compiler and standard libraries that supports C++ 17 standard;
+3. a C++ compiler that supports OpenMP; and
+4. CMake.
 
-The configuration and compilation steps are the same with any CMake-based
-project.
+Some notable environments that do not meet this requirement are 
+a) Apple Clang which doesn't support OpenMP,
+b) Intel/Nvidia compilers that reply on system `libstdc++` but 
+the system `libstdc++` is too old.
+
+The configuration and compilation steps are the same with any CMake-based project.
 Note that one can simply configure and compile the code; if any of the
 requirements isn't met, either the configuration of compilation step will fail.
 More details about building SPERR from source, including build options,
