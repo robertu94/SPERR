@@ -1,4 +1,4 @@
-## Lossy Data Compression with SPERR
+## Lossy Data Compression With SPERR
 
 SPERR performs lossy compression on 2D or 3D scientific (floating-point) data.
 Its output can be either _size-bounded_ (expressed as bit-per-pixel, or BPP) or
