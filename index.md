@@ -52,9 +52,9 @@ To successfully compile SPERR from source, the build system needs to have
 3. a C++ compiler that supports OpenMP; and
 4. CMake.
 
-Some notable environments that do not meet this requirement are 
+Some notable environments that do not meet this requirement are
 a) Apple Clang which doesn't support OpenMP, and
-b) Intel/Nvidia compilers that reply on system `libstdc++` but 
+b) Intel/Nvidia compilers that reply on system `libstdc++` but
 the system `libstdc++` is too old.
 
 The configuration and compilation steps are the same with any CMake-based project.
@@ -70,13 +70,9 @@ Upon a successful build, the following command line utilities are generated in t
 Each utility program contains a set of parameters, and the best way to reference
 each parameter is to look at the help page of each utility program, e.g.,
 `compressor_3d -h` or `compressor_3d --help`.
-Here is a list of all command line utilities that are built by default.
+Here is a list of major command line utilities that are built by default.
 
-- `show_version`: it simply prints the current SPERR version and the Git SHA1
-  value of the code that is being compiled.
-- `compressor_3d`: it takes in a 3D volume and produces compressed bitstream.
-  A set of options that describes the input volume and compression parameters
-  is required.
+- `compressor_3d`: it takes in a 3D volume and produces a compressed bitstream.
 - `decompressor_3d`: it takes in a SPERR compressed bitstream and produces a
   reconstruction 3D volume.
   Note that a `decompressor_3d` compiled in size-bounded mode can only decompress
@@ -86,8 +82,11 @@ Here is a list of all command line utilities that are built by default.
   between compression levels and qualities, and locate the best compression parameters.
   Compression levels are expressed as average bit-per-pixel (BPP), and
   compression qualities are expressed using peak signal-to-noise ratio (PSNR),
-  maximum point-wise error (PWE), root-mean-square error (RMSE). 
+  maximum point-wise error (PWE), root-mean-square error (RMSE).
   **[This page](https://github.com/shaomeng/SPERR/wiki/CLI:-Exploring-Compression-Parameters-Using-probe_3d)
   provides an example demonstrating the usage of `probe_3d`.**
-- `compressor_2d`, `decompressor_2d`, and `probe_2d` are currently under development.
-
+- `compressor_2d`: it takes in a 2D slice and produces a compressed bitstream.
+  It can optionally print compression quality statistics.
+- `decompressor_2d`: it takes in a SPERR compressed bitstream and produces
+  a reconstructed 2D slice. Again, the `compressor_2d` and `decompressor_2d`
+  programs in use must match in either size-bounded or PWE-bounded mode.
