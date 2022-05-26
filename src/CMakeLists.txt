@@ -22,8 +22,12 @@ target_link_libraries(      SPERR PUBLIC OpenMP::OpenMP_CXX )
 #
 if( USE_ZSTD )
     # Declare dependency so that `zstd-download` is finished before SPERR is built.
-    add_dependencies( SPERR zstd-download )
-    target_link_libraries( SPERR PUBLIC zstd )
+    if(USE_BUNDLED_ZSTD)
+      add_dependencies( SPERR zstd-download )
+      target_link_libraries( SPERR PUBLIC zstd )
+    else()
+      target_link_libraries(SPERR PUBLIC PkgConfig::ZSTD)
+    endif()
 endif()
 
 set_target_properties( SPERR PROPERTIES VERSION ${SPERR_VERSION} )

@@ -76,39 +76,45 @@ else()
 endif()
 
 if( USE_ZSTD )
-    message(STATUS "ZSTD add-on enabled!")
+    option( USE_BUNDLED_ZSTD "use the bundled version of Zstd" ON )
+    if(USE_BUNDLED_ZSTD)
+      message(STATUS "ZSTD add-on enabled!")
 
-    project(zstd-download NONE)
-    include(ExternalProject)
-    ExternalProject_Add( zstd-download
-      GIT_REPOSITORY    git@github.com:facebook/zstd.git
-      GIT_TAG           release
-      GIT_SHALLOW       "True"
-      PREFIX            "${CMAKE_CURRENT_BINARY_DIR}/zstd"
-      UPDATE_DISCONNECTED "True"                        # Skip update from git step
-      SOURCE_SUBDIR     "build/cmake/"                  # Specifies where the CMakeLists.txt file is
-      CMAKE_ARGS        "-DCMAKE_BUILD_TYPE=Release"
-      CMAKE_ARGS        "-DZSTD_MULTITHREAD_SUPPORT=False"
-      CMAKE_ARGS        "-DZSTD_BUILD_PROGRAMS=False"   # Don't build zstd command line utilities
-      CMAKE_ARGS        "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/zstd/install"
-      CMAKE_ARGS        "-DCMAKE_INSTALL_LIBDIR=lib"
-      CMAKE_ARGS        "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"         # use the same CXX compiler
-      CMAKE_ARGS        "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"             # use the same C compiler
-      CMAKE_ARGS        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"               # use the same CXX flags
-      CMAKE_ARGS        "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"                   # use the same C flags
-      CMAKE_ARGS        "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}" # use the same linker flags
-      CMAKE_ARGS        "-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}" # use the same deployment target
-      INSTALL_DIR       "${CMAKE_CURRENT_BINARY_DIR}/zstd/install"
-        # !! <INSTALL_DIR> doesn't contain any value now !!
-        # But it can be used later by others to retrieve where the installation is.
-      LOG_CONFIGURE     "True"      # Save output in a file, instead of the terminal.
-      LOG_BUILD         "True"      # Save output in a file, instead of the terminal.
-      LOG_INSTALL       "True"      # Save output in a file, instead of the terminal.
-    )
+      project(zstd-download NONE)
+      include(ExternalProject)
+      ExternalProject_Add( zstd-download
+        GIT_REPOSITORY    git@github.com:facebook/zstd.git
+        GIT_TAG           release
+        GIT_SHALLOW       "True"
+        PREFIX            "${CMAKE_CURRENT_BINARY_DIR}/zstd"
+        UPDATE_DISCONNECTED "True"                        # Skip update from git step
+        SOURCE_SUBDIR     "build/cmake/"                  # Specifies where the CMakeLists.txt file is
+        CMAKE_ARGS        "-DCMAKE_BUILD_TYPE=Release"
+        CMAKE_ARGS        "-DZSTD_MULTITHREAD_SUPPORT=False"
+        CMAKE_ARGS        "-DZSTD_BUILD_PROGRAMS=False"   # Don't build zstd command line utilities
+        CMAKE_ARGS        "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/zstd/install"
+        CMAKE_ARGS        "-DCMAKE_INSTALL_LIBDIR=lib"
+        CMAKE_ARGS        "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"         # use the same CXX compiler
+        CMAKE_ARGS        "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"             # use the same C compiler
+        CMAKE_ARGS        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"               # use the same CXX flags
+        CMAKE_ARGS        "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"                   # use the same C flags
+        CMAKE_ARGS        "-DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}" # use the same linker flags
+        CMAKE_ARGS        "-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}" # use the same deployment target
+        INSTALL_DIR       "${CMAKE_CURRENT_BINARY_DIR}/zstd/install"
+          # !! <INSTALL_DIR> doesn't contain any value now !!
+          # But it can be used later by others to retrieve where the installation is.
+        LOG_CONFIGURE     "True"      # Save output in a file, instead of the terminal.
+        LOG_BUILD         "True"      # Save output in a file, instead of the terminal.
+        LOG_INSTALL       "True"      # Save output in a file, instead of the terminal.
+      )
 
-    ExternalProject_Get_Property( zstd-download INSTALL_DIR )
-    include_directories("${INSTALL_DIR}/include")
-    link_directories( "${INSTALL_DIR}/lib" )
+      ExternalProject_Get_Property( zstd-download INSTALL_DIR )
+      include_directories("${INSTALL_DIR}/include")
+      link_directories( "${INSTALL_DIR}/lib" )
+    else()
+      find_package(PkgConfig REQUIRED)
+      pkg_search_module(ZSTD REQUIRED IMPORTED_TARGET GLOBAL libzstd)
+    endif()
 else()
     message(STATUS "ZSTD add-on disabled!")
 endif()
@@ -123,10 +129,13 @@ endif()
 # and a good discussion on rpath topics:
 # https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
 #
-set( CMAKE_SKIP_BUILD_RPATH             FALSE )
-set( CMAKE_BUILD_WITH_INSTALL_RPATH     FALSE )
-set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-set( CMAKE_INSTALL_RPATH_USE_LINK_PATH  TRUE  )
+option(SPERR_PREFER_RPATH "Use full rpath when installing; plays poorly with spack" ON)
+if(SPERR_PREFER_RPATH)
+  set( CMAKE_SKIP_BUILD_RPATH             FALSE )
+  set( CMAKE_BUILD_WITH_INSTALL_RPATH     FALSE )
+  set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+  set( CMAKE_INSTALL_RPATH_USE_LINK_PATH  TRUE  )
+endif()
 
 
 #
@@ -218,7 +227,7 @@ install( FILES "${CMAKE_BINARY_DIR}/SperrConfig.h" DESTINATION ${CMAKE_INSTALL_I
 
 # Copy over ZSTD libraries
 #
-if( USE_ZSTD )
+if( USE_ZSTD AND USE_BUNDLED_ZSTD )
   ExternalProject_Get_Property( zstd-download INSTALL_DIR )
   install( DIRECTORY "${INSTALL_DIR}/lib/" TYPE LIB )
 endif()
